@@ -1,41 +1,47 @@
-import * as THREE from 'three';
-import { Node } from '/model.js';
+import { Node, Edge, Mesh, forwardEuler } from "/model.js";
+import * as math from "mathjs";
+import { setGeometry,  animate} from "/viewer.js";
 
-const n1 = new Node(0,0);
-console.log(n1.x);
+// Define mesh
+let n1 = new Node(0, 0);
+let n2 = new Node(2, 0);
+let n3 = new Node(4, 0);
 
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+let e1 = new Edge(n1, n2);
+let e2 = new Edge(n2, n3);
 
-const renderer = new THREE.WebGLRenderer();
-renderer.setSize( window.innerWidth, window.innerHeight );
-document.body.appendChild( renderer.domElement );
+n1.dof = [0, 1];
+n2.dof = [2, 3];
+n3.dof = [4, 5];
 
-const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-const cube = new THREE.Mesh( geometry, material );
-scene.add( cube );
+n1.constraints = [true, true];
 
-camera.position.z = 5;
+n2.mass = 2;
+n3.mass = 2;
 
-function animate() {
-	requestAnimationFrame( animate );
+e1.stiffness = 10000;
+e2.stiffness = 10000;
 
-	cube.rotation.x += 0.01;
-	cube.rotation.y += 0.01;
+let mesh = new Mesh([n1, n2, n3], [e1, e2], []);
 
-	renderer.render( scene, camera );
-}
+const t = 5;
+const dt = 0.001;
+const numFrames = parseInt(t / dt);
+const meshWithSteps = forwardEuler(t, dt, mesh);
 
-animate();
+// slider ---------------------------------------------------------------
 
-// slider
-
-var slider = document.getElementById("myRange");
-var output = document.getElementById("demo");
+var slider = document.getElementById("playerBar");
+var output = document.getElementById("frame");
 output.innerHTML = slider.value; // Display the default slider value
+setGeometry(meshWithSteps, slider.value);
+
+slider.setAttribute("max", numFrames);
 
 // Update the current slider value (each time you drag the slider handle)
-slider.oninput = function() {
+slider.oninput = function () {
   output.innerHTML = this.value;
-}
+  setGeometry(meshWithSteps, this.value);
+};
+
+animate();
