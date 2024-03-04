@@ -1,4 +1,16 @@
-# dynamic-simulation
+# Dynamic Simulation
+
+## Setup
+
+```bash
+# install dependencies
+npm i
+```
  
-# Setup
-- This was setup using vite.
+## Development
+
+To run this in development mode:
+
+```bash
+npx vite
+```
