@@ -81,8 +81,7 @@ export function F(x, mesh, m) {
   const G = 9.81;
   let f_ext = Array(mesh.nodes.length * 2).fill(0);
   mesh.nodes.forEach((n) => (f_ext[n.dof[1]] += -m[n.dof[1]] * G)); // assign gravity
-
-  f = f_ext;
+  f = math.add(f, f_ext);
 
   // elastic force
   mesh.edges.forEach((e) => {
@@ -99,12 +98,9 @@ export function F(x, mesh, m) {
 
     const f1 = (e.k * (d2 - d1)) / r;
     const f_element = math.multiply(math.transpose(T), [f1, 0]);
-    // console.log('f_element', f_element);
 
     e.n1.dof.forEach((dof, i) => (f[dof] += f_element[i]));
     e.n2.dof.forEach((dof, i) => (f[dof] -= f_element[i]));
-
-    // console.log('f', f);
   });
 
   return f;

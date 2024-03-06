@@ -8,15 +8,21 @@
   <body>
     <div id="canvas-container">
     </div>
-    <div class="slidecontainer">
-      <input
-        type="range"
-        min="0"
-        max="100"
-        value="0"
-        class="slider"
-        id="playerBar"
-      />
+    <div class="player">
+      <div class="player-button">
+        <button role="play" class="play"></button>
+        <button role="pause" class="pause hidden"></button>
+      </div>
+      <div class="slidecontainer">
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value="0"
+          class="slider"
+          id="playerBar"
+        />
+      </div>
     </div>
     <p id="frame"></p>
     <script type="module" src="/main.js"></script>

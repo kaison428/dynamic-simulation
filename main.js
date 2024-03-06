@@ -1,6 +1,5 @@
 import { Node, Edge, Mesh, forwardEuler } from "/model.js";
-import * as math from "mathjs";
-import { setGeometry,  animate} from "/viewer.js";
+import { setGeometry, animate } from "/viewer.js";
 
 // Define mesh
 let n1 = new Node(0, 0);
@@ -30,18 +29,58 @@ const numFrames = parseInt(t / dt);
 const meshWithSteps = forwardEuler(t, dt, mesh);
 
 // slider ---------------------------------------------------------------
-
 var slider = document.getElementById("playerBar");
 var output = document.getElementById("frame");
+
 output.innerHTML = slider.value; // Display the default slider value
 setGeometry(meshWithSteps, slider.value);
 
 slider.setAttribute("max", numFrames);
 
+function updateViewer() {
+  output.innerHTML = slider.value;
+  setGeometry(meshWithSteps, slider.value);
+}
+
 // Update the current slider value (each time you drag the slider handle)
-slider.oninput = function () {
-  output.innerHTML = this.value;
-  setGeometry(meshWithSteps, this.value);
-};
+slider.oninput = updateViewer;
+
+// button --------------------------------------------------------------
+const player = document.querySelector(".player-button");
+// Use requestAnimationFrame for smoother animation handling
+const fps = 40;
+const updateRate = parseInt(1000 * 1 / fps); // Convert dt to milliseconds for comparison
+const frameIncrement = parseInt(1 / dt / fps);
+let lastFrameTime = 0;
+let isPlayed = false;
+
+function animatePlayer(time) {
+  if (!isPlayed) return; // Stop the animation loop if not in play mode
+  
+  const timeSinceLastFrame = time - lastFrameTime;
+  if (timeSinceLastFrame > updateRate) {
+    if (slider.value < numFrames) {
+      slider.value = parseInt(slider.value) + frameIncrement;
+      updateViewer();
+      lastFrameTime = time;
+    } else {
+      // stop looping the animation when reaching the end
+      togglePlay(); // Assume togglePlay handles stopping and starting the play mode
+    }
+  }
+
+  requestAnimationFrame(animatePlayer);
+}
+
+function togglePlay() {
+  const buttons = Array.from(player.children);
+  buttons.forEach((button) => button.classList.toggle("hidden"));
+  isPlayed = !isPlayed;
+
+  if (isPlayed) requestAnimationFrame(animatePlayer);
+  if (slider.value >= numFrames) slider.value = 0;
+}
+
+player.addEventListener("click", togglePlay);
 
 animate();

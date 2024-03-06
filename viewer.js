@@ -28,7 +28,6 @@ export function setGeometry(mesh, frame) {
   const material = new THREE.LineBasicMaterial({ color: "white" });
 
   // add edges to the scene
-  console.log("mesh edges", mesh.edges.length);
   mesh.edges.forEach((e) => {
     const points = [];
     points.push(
